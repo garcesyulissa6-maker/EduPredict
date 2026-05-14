@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduPredict - Abandono Escolar y Exito Academico</title>
+<meta name="description" content="Prediccion de abandono escolar y exito academico usando Regresion Logistica y Red Neuronal Artificial">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<header>
+  <div class="hicon">&#127891;</div>
+  <div>
+    <h1>Edu<span>Predict</span></h1>
+    <div class="sub">Prediccion de Abandono Escolar y Exito Academico &mdash; UCI ML Repository (ID 697)</div>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('ind')">&#128100; Prediccion Individual</div>
+  <div class="tab" onclick="switchTab('batch')">&#128202; Prediccion por Lotes</div>
+</div>
+
+<main>
+
+  <!-- ===== PANEL INDIVIDUAL ===== -->
+  <div id="panel-ind" class="panel active">
+
+    <div class="card">
+      <h2>&#9881;&#65039; Seleccionar Modelo</h2>
+      <div class="model-row">
+        <button class="mbtn sel" id="mi-lr" onclick="selMod('lr','i')">Regresion Logistica</button>
+        <button class="mbtn" id="mi-ann" onclick="selMod('ann','i')">Red Neuronal (ANN)</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>&#127979; Datos del Estudiante</h2>
+      <form id="form-ind" onsubmit="predInd(event)">
+        <div class="grid">
+          <div class="field"><label>Estado civil</label>
+            <select name="f0"><option value="1">Soltero(a)</option><option value="2">Casado(a)</option><option value="3">Viudo(a)</option><option value="4">Divorciado(a)</option><option value="5">Union de hecho</option><option value="6">Separado(a)</option></select></div>
+          <div class="field"><label>Modo de aplicacion</label>
+            <select name="f1"><option value="1">1a fase general</option><option value="2">Ordenanza 612/93</option><option value="5">1a fase especial (Azores)</option><option value="7">Otros</option><option value="10">Ordenanza 854-B/99</option><option value="15">Estudiante internacional</option><option value="16">1a fase especial (Madeira)</option><option value="17">2a fase general</option><option value="18">3a fase general</option><option value="26">Cambio de curso</option><option value="27">Titulares tecnologicos</option><option value="39">Mayor de 23</option><option value="42">Transferencia</option><option value="43">Cambio institucion</option><option value="44">Licenciados</option><option value="51">Asistencia tecnica</option><option value="53">Cambio plan</option><option value="57">Titulares otros</option></select></div>
+          <div class="field"><label>Orden de aplicacion</label>
+            <input type="number" name="f2" min="0" max="9" value="1" required></div>
+          <div class="field"><label>Curso</label>
+            <select name="f3"><option value="33">Tecnologias Biocombustibles</option><option value="171">Animacion y Multimedia</option><option value="8014">Servicio Social (nocturno)</option><option value="9003">Agronomia</option><option value="9070">Diseno Comunicacion</option><option value="9085">Ingenieria Veterinaria</option><option value="9119">Ingenieria Informatica</option><option value="9130">Equinicultura</option><option value="9147">Gestion</option><option value="9238">Servicio Social</option><option value="9254">Turismo</option><option value="9500">Enfermeria</option><option value="9556">Higiene Oral</option><option value="9670">Gestion Publicidad Marketing</option><option value="9773">Periodismo Comunicacion</option><option value="9853">Educacion Basica</option><option value="9991">Gestion (nocturno)</option></select></div>
+          <div class="field"><label>Asistencia</label>
+            <select name="f4"><option value="1">Diurno</option><option value="0">Nocturno</option></select></div>
+          <div class="field"><label>Cualificacion previa</label>
+            <select name="f5"><option value="1">Educacion secundaria</option><option value="2">Bachillerato</option><option value="3">Licenciatura</option><option value="4">Maestria</option><option value="5">Doctorado</option><option value="6">Frecuencia ed. superior</option><option value="9">12o ano incompleto</option><option value="10">11o ano incompleto</option><option value="14">10o ano</option><option value="19">Educacion basica 3er ciclo</option><option value="38">Educacion basica 2o ciclo</option><option value="39">Curso tecnologico</option><option value="40">Licenciatura (1er ciclo)</option><option value="42">Curso profesional</option><option value="43">Maestria (2o ciclo)</option></select></div>
+          <div class="field"><label>Nota cualificacion previa</label>
+            <input type="number" name="f6" min="95" max="190" step="0.1" value="130" required></div>
+          <div class="field"><label>Nacionalidad</label>
+            <select name="f7"><option value="1">Portugues</option><option value="2">Aleman</option><option value="6">Espanol</option><option value="11">Italiano</option><option value="14">Ingles</option><option value="21">Angolano</option><option value="22">Caboverdiano</option><option value="24">Guineano</option><option value="25">Mozambiqueno</option><option value="41">Brasileno</option><option value="62">Rumano</option><option value="103">Ucraniano</option><option value="109">Colombiano</option></select></div>
+          <div class="field"><label>Cualificacion madre</label>
+            <input type="number" name="f8" min="1" max="44" value="19" required></div>
+          <div class="field"><label>Cualificacion padre</label>
+            <input type="number" name="f9" min="1" max="44" value="22" required></div>
+          <div class="field"><label>Ocupacion madre</label>
+            <input type="number" name="f10" min="0" max="194" value="5" required></div>
+          <div class="field"><label>Ocupacion padre</label>
+            <input type="number" name="f11" min="0" max="195" value="5" required></div>
+          <div class="field"><label>Nota de admision</label>
+            <input type="number" name="f12" min="95" max="190" step="0.1" value="127" required></div>
+          <div class="field"><label>Desplazado</label>
+            <select name="f13"><option value="1">Si</option><option value="0">No</option></select></div>
+          <div class="field"><label>Necesidades especiales</label>
+            <select name="f14"><option value="0">No</option><option value="1">Si</option></select></div>
+          <div class="field"><label>Deudor</label>
+            <select name="f15"><option value="0">No</option><option value="1">Si</option></select></div>
+          <div class="field"><label>Matricula al dia</label>
+            <select name="f16"><option value="1">Si</option><option value="0">No</option></select></div>
+          <div class="field"><label>Genero</label>
+            <select name="f17"><option value="1">Masculino</option><option value="0">Femenino</option></select></div>
+          <div class="field"><label>Becado</label>
+            <select name="f18"><option value="0">No</option><option value="1">Si</option></select></div>
+          <div class="field"><label>Edad al inscribirse</label>
+            <input type="number" name="f19" min="17" max="70" value="20" required></div>
+          <div class="field"><label>Internacional</label>
+            <select name="f20"><option value="0">No</option><option value="1">Si</option></select></div>
+          <div class="field"><label>UC 1er sem (acreditadas)</label>
+            <input type="number" name="f21" min="0" max="20" value="0" required></div>
+          <div class="field"><label>UC 1er sem (inscritas)</label>
+            <input type="number" name="f22" min="0" max="26" value="6" required></div>
+          <div class="field"><label>UC 1er sem (evaluaciones)</label>
+            <input type="number" name="f23" min="0" max="45" value="8" required></div>
+          <div class="field"><label>UC 1er sem (aprobadas)</label>
+            <input type="number" name="f24" min="0" max="26" value="5" required></div>
+          <div class="field"><label>UC 1er sem (nota)</label>
+            <input type="number" name="f25" min="0" max="18.9" step="0.01" value="11" required></div>
+          <div class="field"><label>UC 1er sem (sin evaluacion)</label>
+            <input type="number" name="f26" min="0" max="12" value="0" required></div>
+          <div class="field"><label>UC 2do sem (acreditadas)</label>
+            <input type="number" name="f27" min="0" max="19" value="0" required></div>
+          <div class="field"><label>UC 2do sem (inscritas)</label>
+            <input type="number" name="f28" min="0" max="23" value="6" required></div>
+          <div class="field"><label>UC 2do sem (evaluaciones)</label>
+            <input type="number" name="f29" min="0" max="33" value="8" required></div>
+          <div class="field"><label>UC 2do sem (aprobadas)</label>
+            <input type="number" name="f30" min="0" max="20" value="5" required></div>
+          <div class="field"><label>UC 2do sem (nota)</label>
+            <input type="number" name="f31" min="0" max="18.6" step="0.01" value="11" required></div>
+          <div class="field"><label>UC 2do sem (sin evaluacion)</label>
+            <input type="number" name="f32" min="0" max="12" value="0" required></div>
+          <div class="field"><label>Tasa desempleo (%)</label>
+            <input type="number" name="f33" min="7" max="17" step="0.1" value="11.5" required></div>
+          <div class="field"><label>Tasa inflacion (%)</label>
+            <input type="number" name="f34" min="-1" max="4" step="0.1" value="1.2" required></div>
+          <div class="field"><label>PIB</label>
+            <input type="number" name="f35" min="-5" max="4" step="0.01" value="0" required></div>
+        </div>
+        <div style="margin-top:22px">
+          <button type="submit" class="btn btn-p" id="btn-ind">&#128300; Predecir</button>
+        </div>
+      </form>
+
+      <div class="rbox" id="rbox-ind">
+        <div class="rlbl" id="r-modelo">Modelo: -</div>
+        <div class="rmain" id="r-label">-</div>
+        <div class="prob-bars" id="r-bars"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>&#128200; Métricas del Modelo (Test Set)</h2>
+      <p class="hint">Rendimiento del modelo seleccionado sobre el conjunto de prueba (20% del dataset).</p>
+      <button class="btn btn-p" id="btn-metrics-ind" onclick="loadMetrics('ind')">&#128202; Ver Matriz de Confusión</button>
+      <div id="metrics-ind-out" style="display:none;margin-top:20px">
+        <div class="mets" id="metrics-ind-summary"></div>
+        <h3 style="margin:16px 0 10px;font-size:.95rem">Matriz de Confusión</h3>
+        <div class="cm-wrap"><div class="cm-grid" id="cm-ind"></div></div>
+        <h3 style="margin:20px 0 10px;font-size:.95rem">Métricas por Clase</h3>
+        <div class="tbl-wrap">
+          <table><thead><tr><th>Clase</th><th>Precisión</th><th>Recall</th><th>F1-Score</th><th>Soporte</th></tr></thead>
+          <tbody id="met-ind-body"></tbody></table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PANEL LOTES ===== -->
+  <div id="panel-batch" class="panel">
+
+    <div class="card">
+      <h2>&#9881;&#65039; Seleccionar Modelo</h2>
+      <div class="model-row">
+        <button class="mbtn sel" id="mb-lr" onclick="selMod('lr','b')">Regresion Logistica</button>
+        <button class="mbtn" id="mb-ann" onclick="selMod('ann','b')">Red Neuronal (ANN)</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>&#128200; Métricas del Modelo (Test Set)</h2>
+      <p class="hint">Rendimiento del modelo seleccionado sobre el conjunto de prueba (20% del dataset).</p>
+      <button class="btn btn-b" id="btn-metrics-batch" onclick="loadMetrics('batch')">&#128202; Ver Matriz de Confusión</button>
+      <div id="metrics-batch-out" style="display:none;margin-top:20px">
+        <div class="mets" id="metrics-batch-summary"></div>
+        <h3 style="margin:16px 0 10px;font-size:.95rem">Matriz de Confusión</h3>
+        <div class="cm-wrap"><div class="cm-grid" id="cm-batch"></div></div>
+        <h3 style="margin:20px 0 10px;font-size:.95rem">Métricas por Clase</h3>
+        <div class="tbl-wrap">
+          <table><thead><tr><th>Clase</th><th>Precisión</th><th>Recall</th><th>F1-Score</th><th>Soporte</th></tr></thead>
+          <tbody id="met-batch-body"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>&#128203; Subir Archivo CSV</h2>
+      <p class="hint">Sube un archivo <code>.csv</code> con 36 columnas de features (una fila por estudiante).<br>
+        Si el archivo incluye una columna <code>Target</code> (Dropout/Enrolled/Graduate o 0/1/2), se mostrara la <strong>matriz de confusion</strong> y <strong>metricas de desempeno</strong>.</p>
+      <div class="upload-zone" id="upload-zone" onclick="document.getElementById('csv-file').click()">
+        <input type="file" id="csv-file" accept=".csv" style="display:none" onchange="handleFile(this)">
+        <div class="upload-icon">&#128196;</div>
+        <div class="upload-text">Haz clic o arrastra un archivo CSV aqui</div>
+        <div class="upload-sub">Formato: .csv &mdash; maximo recomendado 5,000 filas</div>
+      </div>
+      <div id="file-info" class="file-info" style="display:none">
+        <span class="file-name" id="file-name"></span>
+        <span class="file-rows" id="file-rows"></span>
+        <button class="file-remove" onclick="clearBatch()">&times;</button>
+      </div>
+      <div style="margin-top:14px;display:flex;gap:12px;flex-wrap:wrap">
+        <button class="btn btn-b" id="btn-batch" onclick="predBatch()" disabled>&#128202; Predecir Lote</button>
+        <button class="btn btn-g" onclick="clearBatch()">Limpiar</button>
+      </div>
+    </div>
+
+    <div class="card" id="batch-out" style="display:none">
+      <h2>&#127942; Resultados</h2>
+      <div class="mets" id="batch-mets"></div>
+      <div id="cm-section" style="display:none">
+        <h3 style="margin:16px 0 10px;font-size:.95rem">Matriz de Confusion</h3>
+        <div class="cm-grid" id="cm-grid"></div>
+        <h3 style="margin:20px 0 10px;font-size:.95rem">Metricas por Clase</h3>
+        <div class="tbl-wrap"><table><thead><tr><th>Clase</th><th>Precision</th><th>Recall</th><th>F1-Score</th><th>Soporte</th></tr></thead><tbody id="met-body"></tbody></table></div>
+      </div>
+      <h3 style="margin:16px 0 10px;font-size:.95rem">Predicciones Individuales</h3>
+      <div class="tbl-wrap"><table><thead><tr id="tbl-head"></tr></thead><tbody id="tbl-body"></tbody></table></div>
+    </div>
+  </div>
+
+</main>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
