@@ -125,13 +125,28 @@ def entrenar_modelos():
 
 # ----- Cargar o entrenar modelos al iniciar -----
 
-# Borrar pkl viejos para reentrenar con misma normalizacion
-for f in ['logreg_model.pkl', 'ann_model.pkl', 'scaler.pkl', 'label_encoder.pkl', 'test_data.pkl']:
-    ruta = os.path.join(BASE_DIR, f)
-    if os.path.exists(ruta):
-        os.remove(ruta)
+def cargar_modelos_existentes():
+    """Intenta cargar los modelos pkl existentes."""
+    lr = cargar_pkl('logreg_model.pkl')
+    ann = cargar_pkl('ann_model.pkl')
+    sc = cargar_pkl('scaler.pkl')
+    le = cargar_pkl('label_encoder.pkl')
+    td = cargar_pkl('test_data.pkl')
+    if lr and ann and sc and le and td:
+        return lr, ann, sc, le, td['X_test'], td['y_test']
+    return None
 
-logreg_model, ann_model, scaler, label_encoder, X_test_global, y_test_global = entrenar_modelos()
+resultado = cargar_modelos_existentes()
+if resultado:
+    logreg_model, ann_model, scaler, label_encoder, X_test_global, y_test_global = resultado
+else:
+    # Solo entrenar si no existen los pkl (entorno local)
+    for f in ['logreg_model.pkl', 'ann_model.pkl', 'scaler.pkl', 'label_encoder.pkl', 'test_data.pkl']:
+        ruta = os.path.join(BASE_DIR, f)
+        if os.path.exists(ruta):
+            os.remove(ruta)
+    logreg_model, ann_model, scaler, label_encoder, X_test_global, y_test_global = entrenar_modelos()
+
 
 
 # ----- Rutas -----
